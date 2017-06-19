@@ -64,8 +64,6 @@ def generate_hybrid_model(data):
     return pickle
 def generate_nn(data):
     return pickle
-def generate_best_model(data,perf_metrics):
-    return pickle
 
 # Reduces a dataset using set of feature reduction techniques
 # |data| is pd.df form of raw data
@@ -98,7 +96,19 @@ def feature_selection_technique_eval(feat_ranking):
 # Evaluates model performance against perf_metrics supplied
 # returns best model stored as .pkl
 # Warning: calling this function takes a long time
-def generate_best_model(data,perf_metrics):
+def generate_best_model(data, perf_metrics):
+    cols = list(data.columns.values)
+    num_features = len(cols)
+    subsets = chain.from_iterable(combinations(cols, k + 1) for k in xrange(1, num_features))
+    trimmed_df = None
+    for subset in subsets:
+        trimmed_df = data[subset]
+        full = generate_full_model(trimmed_df)
+        sparse = generate_sparse_model(trimmed_df)
+        hybrid = generate_hybrid_model(trimmed_df)
+        nn = generate_nn(trimmed_df)
+        pass
+    return pickle
 
 # Identifies dataset format
 # Coerces dataset into usable pd.df
